@@ -11,6 +11,7 @@
     <style>
         :root {
             --primary: #00ff88;
+            --discord: #5865F2;
             --bg: #020406;
             --surface: rgba(15, 20, 30, 0.95);
             --glow: 0 0 20px rgba(0, 255, 136, 0.3);
@@ -50,15 +51,17 @@
         .nav-btn {
             background: #111; border: 1px solid #333; color: #fff;
             padding: 12px 20px; border-radius: 5px; cursor: pointer; transition: 0.3s;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
         }
         .nav-btn.active { border-color: var(--primary); color: var(--primary); background: rgba(0,255,136,0.1); }
+        .nav-btn:hover { background: rgba(255,255,255,0.05); }
 
         .tab-content { display: none; animation: fadeIn 0.5s ease; }
         .tab-content.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- FORMS & CARDS --- */
-        .glass-panel { background: var(--surface); padding: 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); }
+        .glass-panel { background: var(--surface); padding: 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px; }
         
         .member-card {
             width: 280px; background: rgba(255,255,255,0.05);
@@ -75,11 +78,15 @@
         .btn-submit {
             background: var(--primary); color: #000; border: none; padding: 15px;
             font-weight: bold; width: 100%; cursor: pointer; border-radius: 5px; text-transform: uppercase;
+            transition: 0.3s;
         }
+        .btn-submit:hover { filter: brightness(1.2); box-shadow: var(--glow); }
 
-        /* --- STAFF CHAT --- */
-        #staff-chat-box { height: 300px; background: #000; border: 1px solid #222; padding: 15px; overflow-y: auto; margin-bottom: 10px; }
-        .chat-msg { margin-bottom: 8px; font-size: 0.85rem; border-left: 2px solid var(--primary); padding-left: 8px; }
+        .discord-box {
+            border: 1px solid var(--discord);
+            background: rgba(88, 101, 242, 0.05);
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -112,7 +119,9 @@
             <button class="nav-btn" onclick="tab('evento')">EVENTO</button>
             <button class="nav-btn" onclick="tab('candidatura')">CANDIDATURE</button>
             <button class="nav-btn" onclick="tab('unban')">UNBAN</button>
-            <button class="nav-btn" onclick="tab('staff')">STAFF CHAT</button>
+            <a href="https://discord.gg/nctjB6cGgj" target="_blank" class="nav-btn" style="border-color: var(--discord); color: var(--discord);">
+                <i class="fab fa-discord"></i> DISCORD
+            </a>
         </div>
 
         <div id="ruoli" class="tab-content active">
@@ -175,23 +184,12 @@
             </div>
         </div>
 
-        <div id="staff" class="tab-content">
-            <div id="staff-lock" class="glass-panel" style="text-align: center;">
-                <i class="fas fa-lock fa-3x" style="margin-bottom: 20px;"></i>
-                <h4>ACCESSO STAFF RICHIESTO</h4>
-                <button class="btn-submit" onclick="checkStaff()" style="width: auto; padding: 10px 30px; margin-top: 15px;">LOGIN DISCORD</button>
-            </div>
-            <div id="staff-area" class="glass-panel" style="display: none;">
-                <h3>Staff Chat <small style="font-size: 0.6rem; color: var(--primary);">PERMESSI OK</small></h3>
-                <div id="staff-chat-box">
-                    <div class="chat-msg"><b>System:</b> Canale criptato attivo.</div>
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <input type="text" id="chatMsg" placeholder="Messaggio..." style="margin:0;">
-                    <button class="btn-submit" onclick="msg()" style="width: 100px;">INVIA</button>
-                </div>
-            </div>
+        <div class="glass-panel discord-box">
+            <h3 style="color: var(--discord); margin-bottom: 10px;"><i class="fab fa-discord"></i> UNISCITI AL NOSTRO DISCORD</h3>
+            <p style="font-size: 0.8rem; color: #aaa; margin-bottom: 20px;">Rimani aggiornato su tutte le novità del server Mark3sCraft.</p>
+            <a href="https://discord.gg/nctjB6cGgj" target="_blank" class="btn-submit" style="background: var(--discord); color: white; text-decoration: none; display: inline-block; width: auto; padding: 12px 40px;">ENTRA ORA</a>
         </div>
+
     </div>
 </div>
 
@@ -202,7 +200,14 @@
         setTimeout(() => {
             document.getElementById('access-screen').style.display = 'none';
             document.getElementById('main-ui').style.display = 'block';
-            particlesJS('particles-js', { particles: { number: { value: 50 }, color: { value: '#00ff88' }, line_linked: { opacity: 0.1 } } });
+            particlesJS('particles-js', { 
+                particles: { 
+                    number: { value: 50 }, 
+                    color: { value: '#00ff88' }, 
+                    line_linked: { opacity: 0.1 },
+                    move: { speed: 2 }
+                } 
+            });
         }, 1000);
     }
 
@@ -210,7 +215,7 @@
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         document.getElementById(id).classList.add('active');
-        event.target.classList.add('active');
+        event.currentTarget.classList.add('active');
     }
 
     function preview() {
@@ -223,27 +228,11 @@
     setInterval(() => {
         const now = new Date().getTime();
         const d = target - now;
-        document.getElementById('days').innerText = Math.floor(d / (86400000));
-        document.getElementById('hours').innerText = Math.floor((d % 86400000) / 3600000);
-        document.getElementById('mins').innerText = Math.floor((d % 3600000) / 60000);
-        document.getElementById('secs').innerText = Math.floor((d % 60000) / 1000);
+        document.getElementById('days').innerText = Math.max(0, Math.floor(d / (86400000)));
+        document.getElementById('hours').innerText = Math.max(0, Math.floor((d % 86400000) / 3600000));
+        document.getElementById('mins').innerText = Math.max(0, Math.floor((d % 3600000) / 60000));
+        document.getElementById('secs').innerText = Math.max(0, Math.floor((d % 60000) / 1000));
     }, 1000);
-
-    function checkStaff() {
-        alert("Verifica permessi 'MANAGE_CHANNELS'...");
-        setTimeout(() => {
-            document.getElementById('staff-lock').style.display = 'none';
-            document.getElementById('staff-area').style.display = 'block';
-        }, 1500);
-    }
-
-    function msg() {
-        const m = document.getElementById('chatMsg').value;
-        if(m) {
-            document.getElementById('staff-chat-box').innerHTML += `<div class="chat-msg"><b>Tu:</b> ${m}</div>`;
-            document.getElementById('chatMsg').value = "";
-        }
-    }
 
     async function sendDiscord(e, type) {
         e.preventDefault();
@@ -253,25 +242,30 @@
 
         if(type === 'RUOLO') {
             embed.description = `**Utente:** ${document.getElementById('r-user').value}\n**Ruolo:** ${document.getElementById('r-name').value}\n**Note:** ${document.getElementById('r-note').value}`;
-            embed.color = 65280; // Verde
+            embed.color = 65280; 
         } else if(type === 'EVENTO') {
             embed.description = `**Partecipante:** ${document.getElementById('e-user').value}\n**Classe:** ${document.getElementById('e-kit').value}`;
-            embed.color = 255; // Blu
+            embed.color = 3447003; 
         } else if(type === 'UNBAN') {
             embed.description = `**Utente:** ${document.getElementById('u-user').value}\n**Motivo:** ${document.getElementById('u-reason').value}`;
-            embed.color = 16711680; // Rosso
+            embed.color = 15158332; 
         } else if(type === 'CANDIDATURA') {
             embed.description = `**Candidato:** ${document.getElementById('c-user').value}\n**Età:** ${document.getElementById('c-age').value}\n**Esperienza:** ${document.getElementById('c-exp').value}`;
-            embed.color = 16776960; // Giallo
+            embed.color = 16776960; 
         }
 
-        await fetch(webhook, {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ embeds: [embed] })
-        });
-        alert("TRASMESSA AL DATABASE!");
-        e.target.reset();
+        try {
+            await fetch(webhook, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ embeds: [embed] })
+            });
+            alert("TRASMESSA AL DATABASE CON SUCCESSO!");
+            e.target.reset();
+            if(type === 'RUOLO') preview();
+        } catch (err) {
+            alert("ERRORE DI TRASMISSIONE. Riprova più tardi.");
+        }
     }
 </script>
 
